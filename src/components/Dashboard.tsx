@@ -19,7 +19,8 @@ import {
   CheckCircle2,
   XCircle,
   RotateCw,
-  Gauge
+  Gauge,
+  Sliders
 } from 'lucide-react';
 import { LineEntry, DashboardLayout, UserProfile } from '../types';
 import { calculateFactoryOverall, calculateLineMetrics, formatDateLabel } from '../utils';
@@ -386,8 +387,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 ></div>
               </div>
               <div className="flex justify-between text-[10px] text-[#527078] mt-1 font-mono-numbers">
-                <span>Produced: {factory.totalProducedMinutes.toLocaleString()} min</span>
-                <span>Available: {factory.totalAvailableMinutes.toLocaleString()} min</span>
+                <span>Produced: {(factory.totalProducedMinutes ?? 0).toLocaleString()} min</span>
+                <span>Available: {(factory.totalAvailableMinutes ?? 0).toLocaleString()} min</span>
               </div>
             </div>
           </div>
@@ -402,10 +403,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
             <div className="flex items-baseline gap-2">
               <span className="font-display text-3xl sm:text-4xl font-bold text-[#17343a] tracking-tight">
-                {factory.totalAchievedProd.toLocaleString()}
+                {(factory.totalAchievedProd ?? 0).toLocaleString()}
               </span>
               <span className="text-xs text-[#527078] font-mono-numbers">
-                / {factory.totalTargetProd.toLocaleString()} Pcs
+                / {(factory.totalTargetProd ?? 0).toLocaleString()} Pcs
               </span>
             </div>
             <div className="mt-3 flex items-center justify-between text-xs text-[#527078]">
@@ -480,7 +481,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="mt-3 flex items-center justify-between text-xs text-[#527078]">
               <span>In-Line Buffer WIP:</span>
               <span className="font-mono-numbers font-bold text-[#17343a]">
-                {factory.totalWip.toLocaleString()} pcs
+                {(factory.totalWip ?? 0).toLocaleString()} pcs
               </span>
             </div>
             <div className="text-[10px] text-[#527078] mt-1">
@@ -508,13 +509,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
               Current shift output, SMV ratings, manpower balance, and bottleneck stations
             </p>
           </div>
-          <button
-            onClick={() => onNavigate('linedata')}
-            className="self-start sm:self-auto flex items-center gap-1 text-xs font-bold text-[#176f78] hover:text-[#12555c] transition-colors"
-          >
-            <span>Manage All Lines</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <button
+              onClick={() => onNavigate('simulator')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#dceceb] text-[#176f78] hover:bg-[#cde4e3] text-xs font-bold transition-colors shadow-2xs"
+            >
+              <Sliders className="w-3.5 h-3.5" />
+              <span>IE Simulator</span>
+            </button>
+            <button
+              onClick={() => onNavigate('linedata')}
+              className="flex items-center gap-1 text-xs font-bold text-[#176f78] hover:text-[#12555c] transition-colors py-1.5 px-2"
+            >
+              <span>Manage Lines</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -581,10 +591,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     {/* Target / Achieved */}
                     <td className="py-3 px-3 font-mono-numbers">
                       <div className="font-bold text-[#17343a]">
-                        {line.achievedProd.toLocaleString()} pcs
+                        {(line.achievedProd ?? 0).toLocaleString()} pcs
                       </div>
                       <div className="text-[10px] text-[#527078]">
-                        Target: {line.targetProd.toLocaleString()}
+                        Target: {(line.targetProd ?? 0).toLocaleString()}
                       </div>
                     </td>
 
@@ -805,7 +815,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-[#e7e1d5] text-xs mt-3">
-              <span className="text-[#527078]">Cumulative today: <strong className="text-[#17343a] font-mono-numbers">{factory.totalAchievedProd.toLocaleString()} pcs</strong></span>
+              <span className="text-[#527078]">Cumulative today: <strong className="text-[#17343a] font-mono-numbers">{(factory.totalAchievedProd ?? 0).toLocaleString()} pcs</strong></span>
               <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">Current rate: 642 pcs/hr</span>
             </div>
           </div>
@@ -900,7 +910,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <span className="font-bold text-xs text-[#17343a]">{line.nextStyle}</span>
                     </div>
                     <div className="text-[11px] text-[#527078] mt-0.5">
-                      Order Qty: {line.orderQty.toLocaleString()} pcs • Buyer: {line.buyer}
+                      Order Qty: {(line.orderQty ?? 0).toLocaleString()} pcs • Buyer: {line.buyer || 'General'}
                     </div>
                   </div>
                   <div className="text-right shrink-0">

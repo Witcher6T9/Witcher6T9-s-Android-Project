@@ -186,10 +186,10 @@ export const Reports: React.FC<ReportsProps> = ({ lines, todayDate, profile }) =
                       </span>
                     </td>
                     <td className="py-2 px-2.5 border-r border-slate-200 font-mono-numbers">
-                      {m.standardProducedMinutes.toLocaleString()}
+                      {(m.standardProducedMinutes ?? 0).toLocaleString()}
                     </td>
                     <td className="py-2 px-2.5 border-r border-slate-200 font-mono-numbers">
-                      {m.availableMinutes.toLocaleString()}
+                      {(m.availableMinutes ?? 0).toLocaleString()}
                     </td>
                     <td className="py-2 px-2.5 border-r border-slate-200 font-display text-sm font-bold">
                       <span className={isOverTarget ? 'text-emerald-700' : 'text-amber-700'}>
@@ -217,19 +217,19 @@ export const Reports: React.FC<ReportsProps> = ({ lines, todayDate, profile }) =
                   {factory.totalPresent} / <span className="text-rose-600">{factory.totalAbsent}</span>
                 </td>
                 <td className="py-2.5 px-2.5 border-r border-slate-200 font-mono-numbers">
-                  {factory.totalTargetProd.toLocaleString()}
+                  {(factory.totalTargetProd ?? 0).toLocaleString()}
                 </td>
                 <td className="py-2.5 px-2.5 border-r border-slate-200 font-mono-numbers">
-                  {factory.totalAchievedProd.toLocaleString()}
+                  {(factory.totalAchievedProd ?? 0).toLocaleString()}
                 </td>
                 <td className="py-2.5 px-2.5 border-r border-slate-200 font-mono-numbers">
                   {factory.targetVariance >= 0 ? `+${factory.targetVariance}` : factory.targetVariance}
                 </td>
                 <td className="py-2.5 px-2.5 border-r border-slate-200 font-mono-numbers">
-                  {factory.totalProducedMinutes.toLocaleString()}
+                  {(factory.totalProducedMinutes ?? 0).toLocaleString()}
                 </td>
                 <td className="py-2.5 px-2.5 border-r border-slate-200 font-mono-numbers">
-                  {factory.totalAvailableMinutes.toLocaleString()}
+                  {(factory.totalAvailableMinutes ?? 0).toLocaleString()}
                 </td>
                 <td className="py-2.5 px-2.5 border-r border-slate-200 font-display text-base text-[#176f78]">
                   {factory.overallEfficiency}%

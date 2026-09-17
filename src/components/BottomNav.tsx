@@ -19,7 +19,8 @@ import {
   Bell,
   UserCheck,
   ShieldCheck,
-  ChevronUp
+  ChevronUp,
+  Sliders
 } from 'lucide-react';
 import { UserProfile } from '../types';
 
@@ -50,7 +51,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 }) => {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
-  // All 7 Core Tabs
+  // All 8 Core Tabs (Lines at 2nd, Simulator at 3rd)
   const allTabs = [
     {
       id: 'dashboard',
@@ -58,6 +59,20 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       fullLabel: 'Production Dashboard',
       icon: Activity,
       badge: undefined
+    },
+    {
+      id: 'linedata',
+      label: 'Lines',
+      fullLabel: 'Workstation & Line Balancing',
+      icon: Layers,
+      badge: undefined
+    },
+    {
+      id: 'simulator',
+      label: 'Simulator',
+      fullLabel: 'IE Line Setup & Flow Simulator',
+      icon: Sliders,
+      badge: 'PRO'
     },
     {
       id: 'checklist',
@@ -72,13 +87,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       fullLabel: 'Floor Tasks & Shift Timeline',
       icon: Clock,
       badge: pendingTodosCount > 0 ? String(pendingTodosCount) : undefined
-    },
-    {
-      id: 'linedata',
-      label: 'Lines',
-      fullLabel: 'Workstation & Line Balancing',
-      icon: Layers,
-      badge: undefined
     },
     {
       id: 'lean-toolkit',
@@ -104,7 +112,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   ];
 
   // Secondary items handled in the "More" drawer on smaller mobile viewports
-  const secondaryTabIds = ['lean-toolkit', 'monthly', 'reports'];
+  const secondaryTabIds = ['todo-schedule', 'lean-toolkit', 'monthly', 'reports'];
   const isSecondaryActive = secondaryTabIds.includes(currentTab);
   const activeSecondaryTab = allTabs.find(t => t.id === currentTab);
 
@@ -268,7 +276,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         className="fixed bottom-0 inset-x-0 z-40 bg-[#fbfaf6]/95 backdrop-blur-md border-t border-[#d9d2c2] shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]"
       >
         <div className="max-w-[1500px] mx-auto px-2 sm:px-6">
-          {/* Mobile View: 5 slots (Home, Checklist, To-Do, Lines, and More/Secondary) */}
+          {/* Mobile View: 5 slots (Home, Lines, Checklist, To-Do, and More/Secondary) */}
           <div className="flex md:hidden items-center justify-around h-16">
             {/* 1. Home */}
             <button
@@ -300,7 +308,70 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               )}
             </button>
 
-            {/* 2. Checklist */}
+            {/* 2. Lines (Moved to 2nd position) */}
+            <button
+              id="bottom-nav-mobile-lines"
+              onClick={() => handleTabClick('linedata')}
+              aria-current={currentTab === 'linedata' ? 'page' : undefined}
+              className={`flex-1 flex flex-col items-center justify-center py-1 min-h-[48px] rounded-xl transition-all ${
+                currentTab === 'linedata'
+                  ? 'text-[#176f78]'
+                  : 'text-slate-500 hover:text-[#176f78]'
+              }`}
+            >
+              <div className="relative">
+                <Layers
+                  className={`w-5 h-5 transition-transform ${
+                    currentTab === 'linedata' ? 'scale-110' : ''
+                  }`}
+                />
+              </div>
+              <span
+                className={`text-[10px] tracking-tight mt-0.5 ${
+                  currentTab === 'linedata' ? 'font-bold' : 'font-medium'
+                }`}
+              >
+                Lines
+              </span>
+              {currentTab === 'linedata' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#176f78] mt-0.5 animate-fadeIn" />
+              )}
+            </button>
+
+            {/* 3. Simulator */}
+            <button
+              id="bottom-nav-mobile-simulator"
+              onClick={() => handleTabClick('simulator')}
+              aria-current={currentTab === 'simulator' ? 'page' : undefined}
+              className={`flex-1 flex flex-col items-center justify-center py-1 min-h-[48px] rounded-xl transition-all relative ${
+                currentTab === 'simulator'
+                  ? 'text-[#176f78]'
+                  : 'text-slate-500 hover:text-[#176f78]'
+              }`}
+            >
+              <div className="relative">
+                <Sliders
+                  className={`w-5 h-5 transition-transform ${
+                    currentTab === 'simulator' ? 'scale-110' : ''
+                  }`}
+                />
+                <span className="absolute -top-1.5 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono-numbers font-bold bg-[#176f78] text-white">
+                  PRO
+                </span>
+              </div>
+              <span
+                className={`text-[10px] tracking-tight mt-0.5 ${
+                  currentTab === 'simulator' ? 'font-bold' : 'font-medium'
+                }`}
+              >
+                Simulator
+              </span>
+              {currentTab === 'simulator' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#176f78] mt-0.5 animate-fadeIn" />
+              )}
+            </button>
+
+            {/* 4. Checklist */}
             <button
               id="bottom-nav-mobile-checklist"
               onClick={() => handleTabClick('checklist')}
@@ -329,71 +400,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 Daily
               </span>
               {currentTab === 'checklist' && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#176f78] mt-0.5 animate-fadeIn" />
-              )}
-            </button>
-
-            {/* 3. To-Do */}
-            <button
-              id="bottom-nav-mobile-todo"
-              onClick={() => handleTabClick('todo-schedule')}
-              aria-current={currentTab === 'todo-schedule' ? 'page' : undefined}
-              className={`flex-1 flex flex-col items-center justify-center py-1 min-h-[48px] rounded-xl transition-all relative ${
-                currentTab === 'todo-schedule'
-                  ? 'text-[#176f78]'
-                  : 'text-slate-500 hover:text-[#176f78]'
-              }`}
-            >
-              <div className="relative">
-                <Clock
-                  className={`w-5 h-5 transition-transform ${
-                    currentTab === 'todo-schedule' ? 'scale-110' : ''
-                  }`}
-                />
-                {pendingTodosCount > 0 && (
-                  <span className="absolute -top-1.5 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono-numbers font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                    {pendingTodosCount}
-                  </span>
-                )}
-              </div>
-              <span
-                className={`text-[10px] tracking-tight mt-0.5 ${
-                  currentTab === 'todo-schedule' ? 'font-bold' : 'font-medium'
-                }`}
-              >
-                To-Do
-              </span>
-              {currentTab === 'todo-schedule' && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#176f78] mt-0.5 animate-fadeIn" />
-              )}
-            </button>
-
-            {/* 4. Lines */}
-            <button
-              id="bottom-nav-mobile-lines"
-              onClick={() => handleTabClick('linedata')}
-              aria-current={currentTab === 'linedata' ? 'page' : undefined}
-              className={`flex-1 flex flex-col items-center justify-center py-1 min-h-[48px] rounded-xl transition-all ${
-                currentTab === 'linedata'
-                  ? 'text-[#176f78]'
-                  : 'text-slate-500 hover:text-[#176f78]'
-              }`}
-            >
-              <div className="relative">
-                <Layers
-                  className={`w-5 h-5 transition-transform ${
-                    currentTab === 'linedata' ? 'scale-110' : ''
-                  }`}
-                />
-              </div>
-              <span
-                className={`text-[10px] tracking-tight mt-0.5 ${
-                  currentTab === 'linedata' ? 'font-bold' : 'font-medium'
-                }`}
-              >
-                Lines
-              </span>
-              {currentTab === 'linedata' && (
                 <span className="w-1.5 h-1.5 rounded-full bg-[#176f78] mt-0.5 animate-fadeIn" />
               )}
             </button>

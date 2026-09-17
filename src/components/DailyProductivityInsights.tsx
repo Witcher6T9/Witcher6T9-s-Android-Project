@@ -112,8 +112,8 @@ export const DailyProductivityInsights: React.FC<DailyProductivityInsightsProps>
             )}
             <span>
               {totalGapUnits >= 0
-                ? `+${totalGapUnits.toLocaleString()} Pcs Above Target`
-                : `${Math.abs(totalGapUnits).toLocaleString()} Pcs Production Gap`}
+                ? `+${(totalGapUnits ?? 0).toLocaleString()} Pcs Above Target`
+                : `${Math.abs(totalGapUnits ?? 0).toLocaleString()} Pcs Production Gap`}
             </span>
           </div>
         </div>
@@ -133,10 +133,10 @@ export const DailyProductivityInsights: React.FC<DailyProductivityInsightsProps>
             <div className="flex items-baseline gap-3 flex-wrap">
               <div className="flex items-baseline gap-1">
                 <span className="font-display text-3xl sm:text-4xl font-extrabold text-[#17343a] font-mono-numbers">
-                  {totalAchievedProd.toLocaleString()}
+                  {(totalAchievedProd ?? 0).toLocaleString()}
                 </span>
                 <span className="text-sm font-semibold text-[#527078]">
-                  / {totalTargetProd.toLocaleString()} pcs
+                  / {(totalTargetProd ?? 0).toLocaleString()} pcs
                 </span>
               </div>
 
@@ -161,7 +161,7 @@ export const DailyProductivityInsights: React.FC<DailyProductivityInsightsProps>
                   totalGapUnits >= 0 ? 'text-emerald-700' : 'text-rose-600'
                 }`}
               >
-                {totalGapUnits >= 0 ? `+${totalGapUnits.toLocaleString()}` : `${totalGapUnits.toLocaleString()}`} pcs
+                {totalGapUnits >= 0 ? `+${(totalGapUnits ?? 0).toLocaleString()}` : `${(totalGapUnits ?? 0).toLocaleString()}`} pcs
               </div>
               <div className="text-[10px] text-[#738287] font-medium font-mono-numbers">
                 ({gapPercentage > 0 ? `+${gapPercentage.toFixed(1)}` : gapPercentage.toFixed(1)}%)
@@ -171,7 +171,7 @@ export const DailyProductivityInsights: React.FC<DailyProductivityInsightsProps>
             <div className="p-2.5 rounded-xl bg-[#fbfaf6] border border-[#e7e1d5]">
               <div className="text-[10px] font-bold uppercase text-[#527078]">Remaining To Quota</div>
               <div className="text-base font-extrabold font-mono-numbers text-[#17343a]">
-                {unitsRemainingToTarget.toLocaleString()} pcs
+                {(unitsRemainingToTarget ?? 0).toLocaleString()} pcs
               </div>
               <div className="text-[10px] text-[#527078] font-medium">
                 in 1.5 hrs remaining
@@ -213,7 +213,7 @@ export const DailyProductivityInsights: React.FC<DailyProductivityInsightsProps>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-xs bg-[#176f78] inline-block" />
               <span>
-                Actual Production: <strong className="text-[#17343a] font-mono-numbers">{totalAchievedProd.toLocaleString()} pcs</strong> ({progressRatio.toFixed(1)}%)
+                Actual Production: <strong className="text-[#17343a] font-mono-numbers">{(totalAchievedProd ?? 0).toLocaleString()} pcs</strong> ({progressRatio.toFixed(1)}%)
               </span>
             </div>
 
@@ -227,7 +227,7 @@ export const DailyProductivityInsights: React.FC<DailyProductivityInsightsProps>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-xs bg-[#f1eee6] border border-[#d9d2c2] inline-block" />
               <span>
-                Shift Target: <strong className="text-[#17343a] font-mono-numbers">{totalTargetProd.toLocaleString()} pcs</strong>
+                Shift Target: <strong className="text-[#17343a] font-mono-numbers">{(totalTargetProd ?? 0).toLocaleString()} pcs</strong>
               </span>
             </div>
           </div>
@@ -260,7 +260,7 @@ export const DailyProductivityInsights: React.FC<DailyProductivityInsightsProps>
             <div className="text-right">
               <span className="text-[10px] text-[#527078] uppercase font-bold">Projected Shift Output</span>
               <div className="font-display font-bold text-sm text-[#17343a] font-mono-numbers">
-                ~{projectedShiftOutput.toLocaleString()} pcs ({projectedVsTargetPct}%)
+                ~{(projectedShiftOutput ?? 0).toLocaleString()} pcs ({projectedVsTargetPct}%)
               </div>
             </div>
           </div>
@@ -364,10 +364,10 @@ export const DailyProductivityInsights: React.FC<DailyProductivityInsightsProps>
                 <div className="flex items-baseline justify-between mb-1.5">
                   <div className="flex items-baseline gap-1">
                     <span className="text-xl font-bold font-mono-numbers text-[#17343a]">
-                      {line.achievedProd.toLocaleString()}
+                      {(line.achievedProd ?? 0).toLocaleString()}
                     </span>
                     <span className="text-xs text-[#527078] font-mono-numbers">
-                      / {line.targetProd.toLocaleString()} pcs
+                      / {(line.targetProd ?? 0).toLocaleString()} pcs
                     </span>
                   </div>
                   <div className="text-xs font-bold font-mono-numbers text-[#17343a]">

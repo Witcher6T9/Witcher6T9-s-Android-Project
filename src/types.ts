@@ -52,11 +52,57 @@ export interface TimeStudy {
 }
 
 export interface BuildUpCurve {
-  day: '1' | '2' | '3' | '4' | 'stable';
+  day: '1' | '2' | '3' | '4' | '5' | '6' | 'stable' | string;
   plannedPct: number;
   achievedPct: number;
   operators: number;
   notes?: string;
+}
+
+export type StyleNature = 'new' | 'repeat'; // Repeat = within 3 months in same line
+export type SMVWeight = 'light' | 'medium' | 'heavy'; // Light: 0-30 min, Medium: 31-60 min, Heavy: >60 min
+
+export interface LearningCurveDayRecord {
+  day: number; // 1 to 6 (or up to 40)
+  plannedEff: number; // % e.g. 20
+  achievedEff: number; // % e.g. 22
+  plannedQty: number; // pcs
+  achievedQty: number; // pcs
+  variancePcs?: number;
+  variancePct?: number;
+  notes?: string;
+}
+
+export interface LineLearningCurve {
+  periodDays: number; // default 6 days
+  currentDay: number; // 1 to 6
+  styleNature: StyleNature;
+  smvWeight: SMVWeight;
+  history: LearningCurveDayRecord[];
+  isRepeatWithin3Months: boolean;
+  notes?: string;
+}
+
+export interface BalancingLossAnalysis {
+  tacctSeconds: number; // ΣT in seconds
+  totalOperators: number; // N
+  maxCTSeconds: number; // CTmax in seconds
+  pitchTimeSeconds?: number;
+  balancingLossPct: number; // Balancing Loss %
+  balancingStatus: 'High Loss' | 'Overloaded/Verify Data' | 'Critical' | 'Stable';
+  potentialPcsPerHour: number; // Potential
+  estimatePcsPerHour: number; // Estimate
+  minCapacityPcsPerHour: number; // Min Cap
+  currentProductionPcsPerHour: number; // Current Prdn
+  estimatedLossPct: number; // Estimated Loss %
+  remarks?: string;
+  // IE Standards from Image 2
+  theoreticalBalancePct: number; // Target > 95%
+  balancingErrorPct: number; // Target < 5%
+  capacityEstimatePct: number; // Target > 10%
+  rightManInRightProcess: boolean; // Target 100%
+  rightMachineForProcess: boolean; // Target 100%
+  needleDowntimeMinutes: number; // Target 18 Min
 }
 
 export interface LineIELead {
@@ -98,6 +144,8 @@ export interface LineEntry {
   timeStudy: TimeStudy;
   buildUp: BuildUpCurve;
   lineIE: LineIELead;
+  learningCurve?: LineLearningCurve;
+  balancingAnalysis?: BalancingLossAnalysis;
 }
 
 export type ChecklistStatus = 'yes' | 'no' | 'pending';
@@ -253,4 +301,59 @@ export interface AppStore {
   theme: ThemeType;
   density: DensityType;
   syncState: SyncState;
+}
+
+export interface OperationStep {
+  id: string;
+  opNo: number;
+  name: string;
+  section: 'preparation' | 'assembly' | 'finishing';
+  machineType: string;
+  smvSec: number;
+  operators: number;
+  cycleTimeSec: number;
+  pitchStatus: 'ok' | 'bottleneck' | 'underloaded';
+  folderOrAttachment?: string;
+  operatorGrade?: 'A' | 'B' | 'C';
+}
+
+export interface MachineRequirement {
+  type: string;
+  name: string;
+  requiredCount: number;
+  installedCount: number;
+  calibratedCount: number;
+  gaugeSpec?: string;
+}
+
+export interface HandoffCheckItem {
+  id: string;
+  category: 'machine_mechanical' | 'attachments_jigs' | 'quality_sample' | 'manpower_skill' | 'material_wip';
+  item: string;
+  standard: string;
+  status: 'pass' | 'fail' | 'pending';
+  responsible: string;
+  notes?: string;
+}
+
+export interface LineHandoffSignoff {
+  role: string;
+  title: string;
+  signedByName: string;
+  status: 'approved' | 'pending' | 'flagged';
+  signedAt?: string;
+  comments?: string;
+}
+
+export interface IESimulatorPreset {
+  id: string;
+  styleName: string;
+  buyer: string;
+  garmentCategory: string;
+  totalSMV: number; // in minutes
+  recommendedOperators: number;
+  recommendedHelpers: number;
+  recommendedIroners: number;
+  operations: OperationStep[];
+  machines: MachineRequirement[];
 }

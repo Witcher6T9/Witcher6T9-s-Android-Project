@@ -12,6 +12,7 @@ import { LineData } from './components/LineData';
 import { LeanToolkit } from './components/LeanToolkit';
 import { MonthlySummary } from './components/MonthlySummary';
 import { Reports } from './components/Reports';
+import { IESimulator } from './components/IESimulator';
 import { BottomNav } from './components/BottomNav';
 import { SettingsModal } from './components/SettingsModal';
 import { UserModal } from './components/UserModal';
@@ -55,7 +56,38 @@ export default function App() {
   const [lines, setLines] = useState<LineEntry[]>(() => {
     try {
       const saved = localStorage.getItem('ie_lines_data');
-      return saved ? JSON.parse(saved) : generateDefaultLineEntries();
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const defaults = generateDefaultLineEntries();
+          return parsed.map((item: any, idx: number) => {
+            const fallback = defaults[idx] || defaults[0];
+            return {
+              ...fallback,
+              ...item,
+              orderQty: item.orderQty ?? fallback.orderQty ?? 10000,
+              achievedProd: item.achievedProd ?? fallback.achievedProd ?? 0,
+              targetProd: item.targetProd ?? fallback.targetProd ?? 1000,
+              wip: item.wip ?? fallback.wip ?? 150,
+              dailyInput: item.dailyInput ?? fallback.dailyInput ?? 1000,
+              dailyOutput: item.dailyOutput ?? fallback.dailyOutput ?? item.achievedProd ?? 0,
+              nextStyle: item.nextStyle ?? fallback.nextStyle ?? 'Basic Tee',
+              nextStyleDate: item.nextStyleDate ?? fallback.nextStyleDate ?? todayStr,
+              buyer: item.buyer ?? fallback.buyer ?? 'Global Brand',
+              remarks: item.remarks ?? fallback.remarks ?? '',
+              learningCurve: item.learningCurve ?? fallback.learningCurve,
+              balancingAnalysis: item.balancingAnalysis ?? fallback.balancingAnalysis,
+              mp: item.mp ?? fallback.mp,
+              top5: item.top5 ?? fallback.top5,
+              bottleneck: item.bottleneck ?? fallback.bottleneck,
+              timeStudy: item.timeStudy ?? fallback.timeStudy,
+              buildUp: item.buildUp ?? fallback.buildUp,
+              lineIE: item.lineIE ?? fallback.lineIE
+            };
+          });
+        }
+      }
+      return generateDefaultLineEntries();
     } catch {
       return generateDefaultLineEntries();
     }
@@ -301,6 +333,89 @@ export default function App() {
     setSelectedLineNo(newLineNo);
   };
 
+  const handleApplySimulationToLine = (lineNo: string, updates: Partial<LineEntry>) => {
+    setLines(prev =>
+      prev.map(line => {
+        if (line.lineNo === lineNo) {
+          return {
+            ...line,
+            ...updates,
+            mp: updates.mp ? { ...line.mp, ...updates.mp } : line.mp,
+            bottleneck: updates.bottleneck ? { ...line.bottleneck, ...updates.bottleneck } : line.bottleneck
+          };
+        }
+        return line;
+      })
+    );
+    setSelectedLineNo(lineNo);
+  };
+
+  const handleAddNewLineWithSimulation = (lineData: Partial<LineEntry>) => {
+    const newLineNo = lineData.lineNo || String(parseInt(lines[lines.length - 1]?.lineNo || '24') + 1);
+    const newLine: LineEntry = {
+      id: Date.now(),
+      date: todayStr,
+      lineNo: newLineNo,
+      floor: lineData.floor || 'Floor 02 / Unit B',
+      buyer: lineData.buyer || 'H&M',
+      style: lineData.style || 'TS-2401 Crewneck Basic',
+      smv: lineData.smv || 12.5,
+      plannedMP: lineData.plannedMP || 36,
+      workingHours: lineData.workingHours || 8,
+      targetEff: lineData.targetEff || 85,
+      targetProd: lineData.targetProd || 1200,
+      achievedProd: 0,
+      efficiency: 0,
+      remarks: lineData.remarks || 'Commissioned via IE Simulator',
+      orderQty: 15000,
+      dailyInput: lineData.targetProd || 1200,
+      dailyOutput: 0,
+      wip: 120,
+      balancingGraph: 'day1',
+      nextStyle: '',
+      nextStyleDate: '',
+      mp: lineData.mp || {
+        Operator: { present: 28, absent: 0 },
+        Helper: { present: 6, absent: 0 },
+        'Iron Man': { present: 2, absent: 0 }
+      },
+      balanceMethod: 'IE Workstation Balancing',
+      balanceNotes: 'Balanced with simulated pitch time',
+      top5: {
+        held: 'yes',
+        attendance: 100,
+        items: ['Trial run approved', 'Attachments verified'],
+        notes: 'Line setup complete'
+      },
+      bottleneck: lineData.bottleneck || {
+        station: 'Critical Assembly',
+        cycleTime: 28,
+        targetCT: 26.8,
+        status: 'ok',
+        action: 'IE plan implemented'
+      },
+      timeStudy: {
+        done: 'yes',
+        type: 'time',
+        observedRate: 150,
+        standardRate: 160
+      },
+      buildUp: {
+        day: '1',
+        plannedPct: 55,
+        achievedPct: 55,
+        operators: lineData.plannedMP || 36
+      },
+      lineIE: {
+        name: profile.name,
+        level: 'executive',
+        period: 'daily'
+      }
+    };
+    setLines(prev => [...prev, newLine]);
+    setSelectedLineNo(newLineNo);
+  };
+
   const handleMarkNotificationRead = (id: string) => {
     setNotifications(prev =>
       prev.map(n => (n.id === id ? { ...n, read: true } : n))
@@ -327,21 +442,40 @@ export default function App() {
     localStorage.clear();
   };
 
+  const handleToggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const handleAddTodoFromAudit = (item: Partial<TodoItem>) => {
+    const fullItem: TodoItem = {
+      id: item.id || `todo-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      title: item.title || 'Kaizen Task',
+      description: item.description || '',
+      category: item.category || 'kaizen_ci',
+      priority: item.priority || 'medium',
+      status: item.status || 'pending',
+      targetDate: item.targetDate || todayStr,
+      dueTime: item.dueTime || '05:00 PM',
+      lineNo: item.lineNo || selectedLineNo,
+      assignedToRole: item.assignedToRole || 'Line IE',
+      assignedToName: item.assignedToName || profile.name,
+      assignedByRole: item.assignedByRole || 'AI IE Diagnostic Agent',
+      assignedByName: item.assignedByName || 'IE System',
+      subtasks: item.subtasks || [],
+      createdAt: new Date().toISOString()
+    };
+    setTodos(prev => [...prev, fullItem]);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f3ec] text-[#17343a] antialiased">
       {/* Top Application Header */}
       <Header
-        currentTab={currentTab}
-        onTabChange={setCurrentTab}
-        profile={profile}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
         unreadCount={unreadNotificationsCount}
         onOpenNotifications={() => setIsNotificationsOpen(true)}
-        onOpenDatabase={() => setIsDatabaseOpen(true)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenUserModal={() => setIsUserModalOpen(true)}
-        syncState={syncState}
-        checklistProgress={checklistCompletionPct}
-        pendingTodosCount={pendingTodosCount}
+        onLogoClick={() => setCurrentTab('dashboard')}
       />
 
       {/* Main Content Area */}
@@ -394,6 +528,19 @@ export default function App() {
             onSelectLineNo={setSelectedLineNo}
             onSaveLine={handleSaveLine}
             onAddNewLine={handleAddNewLine}
+            onNavigate={setCurrentTab}
+          />
+        )}
+
+        {currentTab === 'simulator' && (
+          <IESimulator
+            lines={lines}
+            selectedLineNo={selectedLineNo}
+            onSelectLineNo={setSelectedLineNo}
+            onApplyToLine={handleApplySimulationToLine}
+            onAddNewLineWithSimulation={handleAddNewLineWithSimulation}
+            onNavigate={setCurrentTab}
+            profile={profile}
           />
         )}
 
@@ -413,6 +560,7 @@ export default function App() {
             onSelectDate={setSelectedChecklistDate}
             onNavigate={setCurrentTab}
             profile={profile}
+            onAddTodo={handleAddTodoFromAudit}
           />
         )}
 

@@ -4,6 +4,7 @@
  */
 
 import { LineEntry, ChecklistMap, ChecklistStatus } from './types';
+import { generateLineLearningCurve, calculateBalancingLossAnalysis } from './data/learningCurveMatrix';
 
 // Format helper
 export function getTodayDateStr(): string {
@@ -115,7 +116,9 @@ export function generateDefaultLineEntries(): LineEntry[] {
         weeklyNotes: 'On track to meet weekly shipping milestone',
         monthlyNotes: 'Consistent line efficiency >88%',
         additionalInfo: 'Line ready for upcoming audit inspection'
-      }
+      },
+      learningCurve: generateLineLearningCurve(0.85, 39, 8, 'repeat', 4, true),
+      balancingAnalysis: calculateBalancingLossAnalysis(4590, 39, 48.5, 135, 150)
     },
     {
       id: 2,
@@ -187,7 +190,9 @@ export function generateDefaultLineEntries(): LineEntry[] {
         weeklyNotes: 'Focus on zipper station balancing',
         monthlyNotes: 'Targeting 85% stable efficiency by Friday',
         additionalInfo: 'Fabric lot change scheduled tomorrow morning'
-      }
+      },
+      learningCurve: generateLineLearningCurve(1.25, 32, 8, 'new', 2, false),
+      balancingAnalysis: calculateBalancingLossAnalysis(4648, 32, 62.0, 90, 112)
     },
     {
       id: 3,
